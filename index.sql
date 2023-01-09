@@ -86,11 +86,11 @@ ENGINE 设置存储引擎，CHARSET 设置编码。
 */
 
 CREATE TABLE IF NOT EXISTS student(
-   student_id  INT UNSIGNED AUTO_INCREMENT,
-   student_name VARCHAR(100) NOT NULL,
-   student_age VARCHAR(40) NOT NULL,
-   student_address VARCHAR(40) NOT NULL,
-   student_date DATE,
+   student_id  INT UNSIGNED AUTO_INCREMENT COMMENT "学生ID",
+   student_name VARCHAR(100) NOT NULL COMMENT "学生姓名",
+   student_age VARCHAR(40) NOT NULL COMMENT "学生年龄",
+   student_address VARCHAR(40) NOT NULL COMMENT "学生地址",
+   student_date DATE COMMENT "学生出生年月",
    PRIMARY KEY ( student_id )
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*
