@@ -5,6 +5,8 @@ DROP DATABASE 数据库名;
 删除数据库
 DROP TABLE 数据表名;
 删除数据表
+CREATE TEMPORARY TABLE 数据表名;
+创建临时表
 MySQL 中定义数据字段的类型对你数据库的优化是非常重要的。
 
 MySQL 支持多种类型，大致可以分为三类：数值、日期/时间和字符串(字符)类型。
@@ -89,7 +91,7 @@ CREATE TABLE IF NOT EXISTS student(
    student_age VARCHAR(40) NOT NULL,
    student_address VARCHAR(40) NOT NULL,
    student_date DATE,
-   PRIMARY KEY ( `runoob_id` )
+   PRIMARY KEY ( student_id )
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*
 数据库插入数据
@@ -109,8 +111,8 @@ SELECT 命令可以读取一条或者多条记录。
 你可以使用 LIMIT 属性来设定返回的记录数。
 你可以通过OFFSET指定SELECT语句开始查询的数据偏移量。默认情况下偏移量为0。
 */
-SELECT * FROM student
-SELECT student_id,student_name FROM student WHERE student_name="jay" LIMIT 10 
+SELECT * FROM student;
+SELECT student_id,student_name FROM student WHERE student_name="jay" LIMIT 10 ;
 /*
 查询语句中你可以使用一个或者多个表，表之间使用逗号, 分割，并使用WHERE语句来设定查询条件。
 你可以在 WHERE 子句中指定任何条件。
@@ -118,7 +120,7 @@ SELECT student_id,student_name FROM student WHERE student_name="jay" LIMIT 10
 WHERE 子句也可以运用于 SQL 的 DELETE 或者 UPDATE 命令。
 WHERE 子句类似于程序语言中的 if 条件，根据 MySQL 表中的字段值来读取指定的数据。
 */
-SELECT student_id,student_name FROM student,person WHERE student_name="jay" AND student_address="beijing" LIMIT 10 
+SELECT student_id,student_name FROM student,person WHERE student_name="jay" AND student_address="beijing" LIMIT 10 ;
 /*
 你可以同时更新一个或多个字段。
 你可以在 WHERE 子句中指定任何条件。
@@ -130,8 +132,8 @@ UPDATE student SET student_name="value" WHERE student_id=10;
 你可以在 WHERE 子句中指定任何条件
 您可以在单个表中一次性删除记录。
 */
-DELETE FROM student 
-DELETE FROM student WHERE student_name="value"
+DELETE FROM student ;
+DELETE FROM student WHERE student_name="value";
 /*
 你可以在 WHERE 子句中指定任何条件。
 你可以在 WHERE 子句中使用LIKE子句。
@@ -140,13 +142,11 @@ LIKE 通常与 % 一同使用，类似于一个元字符的搜索。
 你可以使用 AND 或者 OR 指定一个或多个条件。
 你可以在 DELETE 或 UPDATE 命令中使用 WHERE...LIKE 子句来指定条件
 */
-SELECT student_id,student_name FROM student WHERE student_name LIKE="%COM"
+SELECT student_id,student_name FROM student WHERE student_name LIKE="%COM";
 /*
 UNION ALL 实例选取二个表共同的值
 */
-SELECT student_id FROM person
-UNION ALL
-SELECT student_id FROM student
+SELECT student_id FROM person UNION ALL SELECT student_id FROM student;
 /*
 我们知道从 MySQL 表中使用 SQL SELECT 语句来读取数据。
 如果我们需要对读取的数据进行排序，我们就可以使用 MySQL 的 ORDER BY 子句来设定你想按哪个字段哪种方式来进行排序，再返回搜索结果。
@@ -156,3 +156,56 @@ SELECT student_id FROM student
 你可以添加 WHERE...LIKE 子句来设置条件。
 */
 SELECT student_id FROM student WHERE student_name="value" ORDER BY student_id ASC;
+----删除表的student_id字段
+ALTER TABLE student  DROP student_id;
+---如果数据表中只剩余一个字段则无法使用DROP来删除字段。MySQL 中使用 ADD 子句来向数据表中添加列，如下实例在表 testalter_tbl 中添加 i 字段，并定义数据类型:
+ALTER TABLE student ADD student_id INT;
+/*
+如果你需要指定新增字段的位置，可以使用MySQL提供的关键字 FIRST (设定位第一列)， AFTER 字段名（设定位于某个字段之后）。
+尝试以下 ALTER TABLE 语句, 在执行成功后，使用 SHOW COLUMNS 查看表结构的变化：
+*/
+ALTER TABLE student ADD student_id INT FIRST;
+
+ALTER TABLE student ADD student_id INT AFTER student_name;
+---如果需要修改字段类型及名称, 你可以在ALTER命令中使用 MODIFY 或 CHANGE 子句 。
+ALTER TABLE student MODIFY student_name VARCHAR(10);
+---使用 CHANGE 子句, 语法有很大的不同。 在 CHANGE 关键字之后，紧跟着的是你要修改的字段名，然后指定新字段名及类型
+ALTER TABLE student CHANGE student_name student_newname VARCHAR(10);
+---你可以使用 ALTER 来修改字段的默认值
+ALTER TABLE student ALTER student_name SET DEFAULT 1000;
+--你也可以使用 ALTER 命令及 DROP子句来删除字段的默认值
+ALTER TABLE student ALTER student_name DROP DEFAULT;
+--修改数据表类型，可以使用 ALTER 命令及 TYPE 子句来完成
+ALTER TABLE student ENGINE = MYISAM;
+--如果需要修改数据表的名称，可以在 ALTER TABLE 语句中使用 RENAME 子句来实现。
+ALTER TABLE student RENAME TO person;
+/*
+MySQL 临时表在我们需要保存一些临时数据时是非常有用的。临时表只在当前连接可见，当关闭连接时，Mysql会自动删除表并释放所有空间。
+
+临时表在MySQL 3.23版本中添加，如果你的MySQL版本低于 3.23版本就无法使用MySQL的临时表。不过现在一般很少有再使用这么低版本的MySQL数据库服务了。
+
+MySQL临时表只在当前连接可见，如果你使用PHP脚本来创建MySQL临时表，那每当PHP脚本执行完成后，该临时表也会自动销毁。
+
+如果你使用了其他MySQL客户端程序连接MySQL数据库服务器来创建临时表，那么只有在关闭客户端程序时才会销毁临时表，当然你也可以手动销毁。
+*/
+--设置开始自增数
+ ALTER TABLE student_id AUTO_INCREMENT = 100;
+ /*
+有些 MySQL 数据表中可能存在重复的记录，有些情况我们允许重复数据的存在，但有时候我们也需要删除这些重复的数据。
+
+本章节我们将为大家介绍如何防止数据表出现重复数据及如何删除数据表中的重复数据。
+
+防止表中出现重复数据
+你可以在 MySQL 数据表中设置指定的字段为 PRIMARY KEY（主键） 或者 UNIQUE（唯一） 索引来保证数据的唯一性。
+让我们尝试一个实例：下表中无索引及主键，所以该表允许出现多条重复记录
+ */
+ CREATE TABLE IF NOT EXISTS student(
+   --且声明了student_id的自增
+   student_id  INT UNSIGNED AUTO_INCREMENT,
+   student_name VARCHAR(100) NOT NULL,
+   student_age VARCHAR(40) NOT NULL,
+   student_address VARCHAR(40) NOT NULL,
+   student_date DATE,
+   ---UNIQUE (last_name, first_name)设置唯有性 设置了student_id,student_name的唯一性相同数据插入报错
+   PRIMARY KEY ( student_id,student_name)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8;
